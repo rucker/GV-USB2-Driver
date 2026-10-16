@@ -23,6 +23,10 @@ clean:
 
 # Install through dkms so the modules are rebuilt on kernel updates.
 install:
+	# remove other versions, which would install modules with the same names
+	for v in $$(dkms status -m gvusb2 | sed -n 's|^gvusb2/\([^,:]*\).*|\1|p' | sort -u); do \
+		[ "$$v" = "$(GVUSB2_VERSION)" ] || { dkms remove gvusb2/$$v --all; rm -rf /usr/src/gvusb2-$$v; }; \
+	done
 	install -d $(DKMS_SRC)
 	install -m 644 Makefile dkms.conf *.c *.h $(DKMS_SRC)/
 	dkms status -m gvusb2 -v $(GVUSB2_VERSION) | grep -q . || \

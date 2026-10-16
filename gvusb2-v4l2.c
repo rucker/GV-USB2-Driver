@@ -160,8 +160,10 @@ static int gvusb2_vb2_start_streaming(struct vb2_queue *vb2q,
 
 	/* submit urbs */
 	ret = gvusb2_vid_submit_urbs(dev);
-	if (ret < 0)
+	if (ret < 0) {
+		mutex_unlock(&dev->v4l2_lock);
 		return ret;
+	}
 
 	/* stop mutex */
 	mutex_unlock(&dev->v4l2_lock);
